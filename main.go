@@ -84,14 +84,25 @@ func run(options Options) error {
 		return err
 	}
 
-	fmt.Println("data: ", data)
+	logger.Println("Title: ", title)
 
-	pr, err := client.CreatePullRequest(ctx, title, body, from, to)
+	pr, created, err := client.CreatePullRequest(ctx, title, body, from, to)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("created: ", pr)
+	if !created {
+		_, err := client.UpdatePullRequest(ctx, pr.GetNumber(), title, body)
+		if err != nil {
+			return err
+		}
+	}
+
+	if created {
+		logger.Println("created: ", pr)
+	} else {
+		logger.Println("updated: ", pr)
+	}
 
 	return nil
 }

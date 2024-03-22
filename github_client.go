@@ -87,7 +87,7 @@ func (c *GithubClient) FetchPullRequests(ctx context.Context, prNumbers []int) (
 	return pullRequests, nil
 }
 
-func (c *GithubClient) CreatePullRequest(ctx context.Context, title, body, from, to string) (*github.PullRequest, error) {
+func (c *GithubClient) CreatePullRequest(ctx context.Context, title, body, from, to string) (*github.PullRequest, bool, error) {
 	prs, _, err := c.client.PullRequests.List(ctx, c.options.owner, c.options.repo, &github.PullRequestListOptions{
 		Base:  to,
 		Head:  from,
@@ -95,11 +95,11 @@ func (c *GithubClient) CreatePullRequest(ctx context.Context, title, body, from,
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	if len(prs) > 0 {
-		return prs[0], nil
+		return prs[0], false, nil
 	}
 
 	pr, _, err := c.client.PullRequests.Create(ctx, c.options.owner, c.options.repo, &github.NewPullRequest{
@@ -110,7 +110,20 @@ func (c *GithubClient) CreatePullRequest(ctx context.Context, title, body, from,
 	})
 
 	if err != nil {
+		return nil, false, err
+	}
+	return pr, true, nil
+}
+
+func (c *GithubClient) UpdatePullRequest(ctx context.Context, prNumber int, title, body string) (*github.PullRequest, error) {
+	pr, _, err := c.client.PullRequests.Edit(ctx, c.options.owner, c.options.repo, prNumber, &github.PullRequest{
+		Title: &title,
+		Body:  &body,
+	})
+
+	if err != nil {
 		return nil, err
 	}
+
 	return pr, nil
 }
