@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/google/go-github/v60/github"
 )
 
 type Options struct {
 	// from flag
-	DryRun bool
-	From   string
-	To     string
+	From string
+	To   string
 
 	// from env
 	Owner   string
@@ -23,7 +23,6 @@ type Options struct {
 }
 
 func getOptions() (Options, error) {
-	dryRunFlag := flag.Bool("dry-run", false, "perform a dry run; does not update PR")
 	from := flag.String("from", "", "source branch")
 	to := flag.String("to", "", "target branch")
 	flag.Parse()
@@ -34,7 +33,6 @@ func getOptions() (Options, error) {
 	repo := repository[1]
 
 	return Options{
-		DryRun:  *dryRunFlag,
 		From:    *from,
 		To:      *to,
 		Owner:   owner,
@@ -74,7 +72,9 @@ func run(options Options) error {
 		return err
 	}
 
-	data, err := RenderTemplate(nil, RenderTemplateData{pullRequests})
+	currentTime := time.Now()
+	date := currentTime.Format("2006-01-02")
+	data, err := RenderTemplate(nil, RenderTemplateData{pullRequests, date})
 	parts := strings.SplitN(data, "\n", 2)
 
 	title := parts[0]

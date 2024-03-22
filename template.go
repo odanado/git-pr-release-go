@@ -25,6 +25,7 @@ func readTemplate(filename *string) (string, error) {
 
 type RenderTemplateData struct {
 	PullRequests []PullRequest
+	Date         string
 }
 
 func RenderTemplate(filename *string, data RenderTemplateData) (string, error) {
@@ -36,5 +37,6 @@ func RenderTemplate(filename *string, data RenderTemplateData) (string, error) {
 
 	return mustache.Render(template, map[string]interface{}{
 		"pullRequests": data.PullRequests,
+		"date":         data.Date,
 	})
 }
