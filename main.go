@@ -23,7 +23,7 @@ type Options struct {
 }
 
 func getOptions() (Options, error) {
-	ghToken := os.Getenv("GH_TOKEN")
+	ghToken := os.Getenv("GITHUB_TOKEN")
 	repository := strings.Split(os.Getenv("GITHUB_REPOSITORY"), "/")
 	owner := repository[0]
 	repo := repository[1]
