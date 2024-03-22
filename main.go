@@ -23,15 +23,15 @@ type Options struct {
 }
 
 func getOptions() (Options, error) {
-	ghToken := os.Getenv("GITHUB_TOKEN")
-	repository := strings.Split(os.Getenv("GITHUB_REPOSITORY"), "/")
-	owner := repository[0]
-	repo := repository[1]
-
 	dryRunFlag := flag.Bool("dry-run", false, "perform a dry run; does not update PR")
 	from := flag.String("from", "", "source branch")
 	to := flag.String("to", "", "target branch")
 	flag.Parse()
+
+	ghToken := os.Getenv("GITHUB_TOKEN")
+	repository := strings.Split(os.Getenv("GITHUB_REPOSITORY"), "/")
+	owner := repository[0]
+	repo := repository[1]
 
 	return Options{
 		DryRun:  *dryRunFlag,
