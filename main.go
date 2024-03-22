@@ -99,9 +99,9 @@ func run(options Options) error {
 	}
 
 	if created {
-		logger.Println("created: ", pr)
+		logger.Println("created: ", pr.GetNumber())
 	} else {
-		logger.Println("updated: ", pr)
+		logger.Println("updated: ", pr.GetNumber())
 	}
 
 	return nil
