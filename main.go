@@ -44,6 +44,7 @@ func getOptions() (Options, error) {
 }
 
 func run(options Options) error {
+	logger = GetLogger()
 	ctx := context.Background()
 
 	githubClient := github.NewClient(nil).WithAuthToken(options.GhToken)
@@ -60,15 +61,18 @@ func run(options Options) error {
 		return err
 	}
 
-	fmt.Println("prNumbers: ", prNumbers)
+	if len(prNumbers) == 0 {
+		logger.Println("No pull requests found")
+		return nil
+	}
+
+	logger.Println("Found pull requests: ", prNumbers)
 
 	pullRequests, err := client.FetchPullRequests(ctx, prNumbers)
 
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("pullRequests: ", pullRequests[0].Number)
 
 	data, err := RenderTemplate(nil, RenderTemplateData{pullRequests})
 	parts := strings.SplitN(data, "\n", 2)

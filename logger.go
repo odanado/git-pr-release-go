@@ -12,6 +12,6 @@ func GetLogger() *log.Logger {
 		return logger
 	}
 
-	logger = log.New(os.Stdout, "git-pr-release-go", 0)
+	logger = log.New(os.Stderr, "git-pr-release-go", 0)
 	return logger
 }
