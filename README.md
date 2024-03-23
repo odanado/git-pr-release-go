@@ -4,6 +4,8 @@ Go implementation of [git-pr-release][https://github.com/x-motemen/git-pr-releas
 
 This command creates "Release Pull Request" on GitHub. The body of "Release Pull Request" lists the pull requests included in that release.
 
+![](./images/screenshot.png)
+
 # Usage
 
 ```bash
