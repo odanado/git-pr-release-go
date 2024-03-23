@@ -60,8 +60,8 @@ type PullRequest struct {
 	MergedAt time.Time
 }
 
-func (c *GithubClient) FetchPullRequests(ctx context.Context, prNumbers []int) ([]PullRequest, error) {
-	pullRequests := []PullRequest{}
+func (c *GithubClient) FetchPullRequests(ctx context.Context, prNumbers []int) ([]github.PullRequest, error) {
+	pullRequests := []github.PullRequest{}
 
 	for i := 0; i < len(prNumbers); i++ {
 		prNumber := prNumbers[i]
@@ -70,18 +70,11 @@ func (c *GithubClient) FetchPullRequests(ctx context.Context, prNumbers []int) (
 			return nil, err
 		}
 
-		pullRequest := PullRequest{
-			Number:   pr.GetNumber(),
-			Title:    pr.GetTitle(),
-			Assignee: pr.GetAssignee().GetLogin(),
-			MergedAt: pr.GetMergedAt().Time,
-		}
-
-		pullRequests = append(pullRequests, pullRequest)
+		pullRequests = append(pullRequests, *pr)
 	}
 
-	slices.SortFunc(pullRequests, func(a, b PullRequest) int {
-		return a.MergedAt.Compare(b.MergedAt)
+	slices.SortFunc(pullRequests, func(a, b github.PullRequest) int {
+		return a.MergedAt.Compare(b.MergedAt.Time)
 	})
 
 	return pullRequests, nil

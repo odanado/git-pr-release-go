@@ -85,6 +85,7 @@ func run(options Options) error {
 	}
 
 	logger.Println("Title: ", title)
+	logger.Println("Body: ", body)
 
 	pr, created, err := client.CreatePullRequest(ctx, title, body, from, to)
 	if err != nil {
