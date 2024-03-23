@@ -31,7 +31,17 @@ jobs:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
 
-      # Download git-pr-release-go
+      - name: Download git-pr-release-go
+        run: |
+          mkdir -p tmp
+          gh release download --repo odanado/git-pr-release-go --pattern "*Linux_x86_64*" --output - | tar zxvf - -C tmp
+          mkdir -p /opt/git-pr-release-go/bin
+          mv tmp/git-pr-release-go /opt/git-pr-release-go/bin
+          rm -rf tmp
+
+          echo "/opt/git-pr-release-go/bin" >> $GITHUB_PATH
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - run: ./git-pr-release-go --from main --to release/production
         working-directory: git-pr-release-go
