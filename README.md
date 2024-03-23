@@ -47,7 +47,6 @@ jobs:
         working-directory: git-pr-release-go
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-
 ```
 
 ## Options
@@ -61,19 +60,18 @@ jobs:
 - `GITHUB_API_URL`: GitHub API URL. Optional.
 - `GITHUB_REPOSITORY`: GitHub repository name. Required.
 
+If you are using GitHub Actions, `GITHUB_API_URL` and `GITHUB_REPOSITORY` are automatically set by the runner and you do not need to specify them.
+
 # Compare with git-pr-release
 
 It is implemented in go, so all you need is a binary file to use it. It does not require Ruby.
 
-
-## Migration from git-pr-release
-
-TDB
+However, it is a tool inspired by git-pr-release and therefore has respect.
 
 # TODO
 - [ ] Support a custom template
 - [ ] Support custom labels
-- [ ] Add testing
+- [ ] Add more testing
 
 # Release flow
 
