@@ -1,6 +1,6 @@
 # git-pr-release-go
 
-Go implementation of [git-pr-release][https://github.com/x-motemen/git-pr-release].
+Go implementation of [git-pr-release](https://github.com/x-motemen/git-pr-release).
 
 This command creates "Release Pull Request" on GitHub. The body of "Release Pull Request" lists the pull requests included in that release.
 
