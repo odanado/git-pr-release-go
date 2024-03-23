@@ -64,9 +64,14 @@ If you are using GitHub Actions, `GITHUB_API_URL` and `GITHUB_REPOSITORY` are au
 
 # Compare with git-pr-release
 
-It is implemented in go, so all you need is a binary file to use it. It does not require Ruby.
+This tool is developed in Go, eliminating the need for Ruby, as it operates entirely through a binary file.
 
-However, it is a tool inspired by git-pr-release and therefore has respect.
+While inspired by git-pr-release, this tool pays homage to its predecessor yet introduces several distinct features:
+
+- By default, the pull request description is overwritten.
+- Squash merging is supported without the need for additional options.
+- A config file is not supported.
+- Templates use Mustache files instead of ERB files.
 
 # TODO
 - [ ] Support a custom template
