@@ -74,4 +74,8 @@ TDB
 - [ ] Support a custom template
 - [ ] Support custom labels
 - [ ] Add testing
-- [ ] Add CI/CD
+
+# Release flow
+
+- Create new tag `git tag -a vx.y.z -m ""`
+- Push the tag `git push origin vx.y.z`
