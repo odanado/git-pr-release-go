@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/url"
 	"slices"
-	"time"
 
 	"github.com/google/go-github/v60/github"
 )
@@ -60,13 +59,6 @@ func (c *GithubClient) FetchPullRequestNumbers(ctx context.Context, from string,
 	slices.Sort(prNumbers)
 
 	return slices.Compact(prNumbers), nil
-}
-
-type PullRequest struct {
-	Number   int
-	Title    string
-	Assignee string
-	MergedAt time.Time
 }
 
 func (c *GithubClient) FetchPullRequests(ctx context.Context, prNumbers []int) ([]github.PullRequest, error) {
