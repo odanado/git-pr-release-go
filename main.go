@@ -60,7 +60,7 @@ func run(options Options) error {
 	}
 
 	if len(prNumbers) == 0 {
-		logger.Println("No pull requests found")
+		logger.Println("No pull requests were found for the release. Nothing to do.")
 		return nil
 	}
 
