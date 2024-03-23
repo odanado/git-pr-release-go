@@ -25,3 +25,4 @@ go.work
 
 .env
 git-pr-release-go
+dist/
