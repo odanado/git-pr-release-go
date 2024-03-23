@@ -4,22 +4,22 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"net/url"
 	"os"
 	"strings"
 	"time"
-
-	"github.com/google/go-github/v60/github"
 )
 
 type Options struct {
 	// from flag
-	From string
-	To   string
+	from string
+	to   string
 
 	// from env
-	Owner   string
-	Repo    string
-	GhToken string
+	owner       string
+	repo        string
+	gitHubToken string
+	apiUrl      *url.URL
 }
 
 func getOptions() (Options, error) {
@@ -27,17 +27,21 @@ func getOptions() (Options, error) {
 	to := flag.String("to", "", "target branch")
 	flag.Parse()
 
-	ghToken := os.Getenv("GITHUB_TOKEN")
+	githubToken := os.Getenv("GITHUB_TOKEN")
 	repository := strings.Split(os.Getenv("GITHUB_REPOSITORY"), "/")
 	owner := repository[0]
 	repo := repository[1]
+	rawApiUrl := os.Getenv("GITHUB_API_URL")
+
+	apiUrl, _ := url.Parse(rawApiUrl)
 
 	return Options{
-		From:    *from,
-		To:      *to,
-		Owner:   owner,
-		Repo:    repo,
-		GhToken: ghToken,
+		from:        *from,
+		to:          *to,
+		owner:       owner,
+		repo:        repo,
+		gitHubToken: githubToken,
+		apiUrl:      apiUrl,
 	}, nil
 }
 
@@ -45,14 +49,10 @@ func run(options Options) error {
 	logger = GetLogger()
 	ctx := context.Background()
 
-	githubClient := github.NewClient(nil).WithAuthToken(options.GhToken)
+	from := options.from
+	to := options.to
 
-	owner := options.Owner
-	repo := options.Repo
-	from := options.From
-	to := options.To
-
-	client := NewClient(githubClient, GithubClientOptions{owner, repo})
+	client := NewClient(GithubClientOptions{owner: options.owner, repo: options.repo, githubToken: options.gitHubToken, apiUrl: options.apiUrl})
 
 	prNumbers, err := client.FetchPullRequestNumbers(ctx, from, to)
 	if err != nil {

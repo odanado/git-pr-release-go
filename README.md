@@ -58,6 +58,7 @@ jobs:
 ## Environment Variables
 
 - `GITHUB_TOKEN`: GitHub API token. Required.
+- `GITHUB_API_URL`: GitHub API URL. Optional.
 - `GITHUB_REPOSITORY`: GitHub repository name. Required.
 
 # Compare with git-pr-release
@@ -70,7 +71,6 @@ It is implemented in go, so all you need is a binary file to use it. It does not
 TDB
 
 # TODO
-- [ ] Support GitHub Enterprise Server
 - [ ] Support a custom template
 - [ ] Support custom labels
 - [ ] Add testing
