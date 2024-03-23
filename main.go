@@ -84,25 +84,21 @@ func run(options Options) error {
 		return err
 	}
 
-	logger.Println("Title: ", title)
-	logger.Println("Body: ", body)
+	logger.Println("Title of pull request:  ", title)
 
 	pr, created, err := client.CreatePullRequest(ctx, title, body, from, to)
 	if err != nil {
 		return err
 	}
 
-	if !created {
+	if created {
+		logger.Println("Created new a pull request.", pr.GetNumber())
+	} else {
 		_, err := client.UpdatePullRequest(ctx, pr.GetNumber(), title, body)
 		if err != nil {
 			return err
 		}
-	}
-
-	if created {
-		logger.Println("created: ", pr.GetNumber())
-	} else {
-		logger.Println("updated: ", pr.GetNumber())
+		logger.Println("The pull request already exists. The body was updated.", pr.GetNumber())
 	}
 
 	return nil
@@ -115,8 +111,6 @@ func main() {
 		fmt.Println("Error: ", err)
 		os.Exit(1)
 	}
-
-	fmt.Println("Options: ", options)
 
 	err = run(options)
 
