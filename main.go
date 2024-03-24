@@ -40,7 +40,7 @@ func getOptions() (Options, error) {
 	apiUrl, _ := url.Parse(rawApiUrl)
 
 	var labels []string
-	if labelsFlag != nil {
+	if *labelsFlag != "" {
 		labels = strings.Split(*labelsFlag, ",")
 	}
 
