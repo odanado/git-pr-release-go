@@ -12,8 +12,9 @@ import (
 
 type Options struct {
 	// from flag
-	from string
-	to   string
+	from   string
+	to     string
+	labels []string
 
 	// from env
 	owner       string
@@ -23,8 +24,9 @@ type Options struct {
 }
 
 func getOptions() (Options, error) {
-	from := flag.String("from", "", "source branch")
-	to := flag.String("to", "", "target branch")
+	from := flag.String("from", "", "The base branch name.")
+	to := flag.String("to", "", "The target branch name.")
+	labelsFlag := flag.String("labels", "", "Specify the labels to add to the pull request as a comma-separated list of strings.")
 	flag.Parse()
 
 	githubToken := os.Getenv("GITHUB_TOKEN")
@@ -35,9 +37,15 @@ func getOptions() (Options, error) {
 
 	apiUrl, _ := url.Parse(rawApiUrl)
 
+	var labels []string
+	if labelsFlag != nil {
+		labels = strings.Split(*labelsFlag, ",")
+	}
+
 	return Options{
 		from:        *from,
 		to:          *to,
+		labels:      labels,
 		owner:       owner,
 		repo:        repo,
 		gitHubToken: githubToken,
@@ -99,6 +107,14 @@ func run(options Options) error {
 			return err
 		}
 		logger.Println("The pull request already exists. The body was updated.", pr.GetNumber())
+	}
+
+	if len(options.labels) > 0 {
+		err := client.AddLabelsToPullRequest(ctx, pr.GetNumber(), options.labels)
+		if err != nil {
+			return err
+		}
+		logger.Println("Added labels to the pull request.", pr.GetNumber())
 	}
 
 	return nil

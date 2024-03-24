@@ -50,6 +50,7 @@ jobs:
 
 - `--from`: The base branch name. Required.
 - `--to`: The target branch name. Required.
+- `--labels`: Specify the labels to add to the pull request as a comma-separated list of strings. Optional.
 
 ## Environment Variables
 
@@ -72,7 +73,6 @@ While inspired by git-pr-release, this tool pays homage to its predecessor yet i
 
 # TODO
 - [ ] Support a custom template
-- [ ] Support custom labels
 - [ ] Add more testing
 
 # Release flow

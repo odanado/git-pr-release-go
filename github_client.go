@@ -125,3 +125,11 @@ func (c *GithubClient) UpdatePullRequest(ctx context.Context, prNumber int, titl
 
 	return pr, nil
 }
+
+func (c *GithubClient) AddLabelsToPullRequest(ctx context.Context, prNumber int, labels []string) error {
+	if len(labels) == 0 {
+		return nil
+	}
+	_, _, err := c.client.Issues.AddLabelsToIssue(ctx, c.owner, c.repo, prNumber, labels)
+	return err
+}

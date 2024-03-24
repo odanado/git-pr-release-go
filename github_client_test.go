@@ -178,3 +178,28 @@ func TestCreatePullRequest_alreadyExists(t *testing.T) {
 		t.Errorf("PullRequests.List returned %+v, want %+v", created, false)
 	}
 }
+
+func TestAddLabelsToPullRequest(t *testing.T) {
+	ctx := context.Background()
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc(
+		"/repos/owner/repo/issues/1/labels",
+		func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprint(w, `[]`)
+		},
+	)
+
+	ts := httptest.NewServer(mux)
+	defer ts.Close()
+
+	apiUrl, _ := url.Parse(ts.URL)
+	client := NewClient(GithubClientOptions{owner: "owner", repo: "repo", githubToken: "githubToken", apiUrl: apiUrl})
+
+	err := client.AddLabelsToPullRequest(ctx, 1, []string{"label1", "label2"})
+
+	if err != nil {
+		t.Errorf("PullRequests.Get returned error: %v", err)
+	}
+}
