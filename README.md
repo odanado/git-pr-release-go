@@ -13,7 +13,44 @@ Designed to streamline the development workflow, this tool automates the creatio
 $ git-pr-release-go --from main --to release/production
 ```
 
-### Usage in GitHub Actions
+### GitHub Actions Usage
+
+For this CLI to function within GitHub Actions, it requires the following permissions:
+
+- `contents: read`
+- `pull-requests: write`
+
+Here's a sample workflow:
+
+```yaml
+name: Create Release Pull Request
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-release-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Setup git-pr-release-go
+        uses: KeisukeYamashita/setup-release@v1.0.2
+        with:
+          repository: odanado/git-pr-release-go
+          arch: x86_64
+          platform: "Linux"
+
+      - run: git-pr-release-go --from main --to release/production
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+#### Using GitHub Apps Tokens
+
+To authenticate using a GitHub Apps token, incorporate [actions/create-github-app-token](https://github.com/actions/create-github-app-token) in your workflow.
 
 ```yaml
 name: Create Release Pull Request
@@ -32,14 +69,12 @@ jobs:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
 
-      - name: Download git-pr-release-go
+      - name: Setup git-pr-release-go
         uses: KeisukeYamashita/setup-release@v1.0.2
         with:
           repository: odanado/git-pr-release-go
           arch: x86_64
-          platform: "Linux"
-        env:
-          GH_TOKEN: ${{ github.token }}
+          platform: Linux
 
       - run: git-pr-release-go --from main --to release/production
         env:
