@@ -1,8 +1,6 @@
 # git-pr-release-go
 
-Go implementation of [git-pr-release](https://github.com/x-motemen/git-pr-release).
-
-git-pr-release-go is a Go-based reimagination of the original Ruby CLI tool, git-pr-release.
+git-pr-release-go is a Go-based reimagination of the original Ruby CLI tool, [git-pr-release](https://github.com/x-motemen/git-pr-release).
 
 Designed to streamline the development workflow, this tool automates the creation of "Release Pull Requests" on GitHub. Each "Release Pull Request" generated compiles a comprehensive list of pull requests slated for the upcoming release, facilitating a clear overview and seamless integration process.
 
