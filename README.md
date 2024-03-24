@@ -41,7 +41,7 @@ jobs:
         with:
           repository: odanado/git-pr-release-go
           arch: x86_64
-          platform: "Linux"
+          platform: Linux
 
       - run: git-pr-release-go --from main --to release/production
         env:
