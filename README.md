@@ -7,13 +7,13 @@ Designed to streamline the development workflow, this tool automates the creatio
 
 ![](./images/screenshot.png)
 
-# Usage
+## Usage
 
 ```bash
 $ git-pr-release-go --from main --to release/production
 ```
 
-## Usage in GitHub Actions
+### Usage in GitHub Actions
 
 ```yaml
 name: Create Release Pull Request
@@ -47,14 +47,14 @@ jobs:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 ```
 
-## Options
+### Options
 
 - `--from`: The base branch name. Required.
 - `--to`: The target branch name. Required.
 - `--labels`: Specify the labels to add to the pull request as a comma-separated list of strings. Optional.
 - `--template`: Specify the Mustache template file. Optional.
 
-## Environment Variables
+### Environment Variables
 
 - `GITHUB_TOKEN`: GitHub API token. Required.
 - `GITHUB_API_URL`: GitHub API URL. Optional.
@@ -62,7 +62,20 @@ jobs:
 
 If you are using GitHub Actions, `GITHUB_API_URL` and `GITHUB_REPOSITORY` are automatically set by the runner and you do not need to specify them.
 
-# Compare with git-pr-release
+### Mustache template customization
+Customize your pull request description with Mustache templates, leveraging variables like:
+
+```json5
+{
+  // Execution date of the CLI
+  "date": "yyyy-MM-dd",
+  // Array of pull requests for the release, using fields from the GitHub REST API response.
+  // https://docs.github.com/ja/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests
+  "pull_requests": []
+}
+```
+
+## Compare with git-pr-release
 
 This tool is developed in Go, eliminating the need for Ruby, as it operates entirely through a binary file.
 
@@ -73,10 +86,10 @@ While inspired by git-pr-release, this tool pays homage to its predecessor yet i
 - A config file is not supported.
 - Templates use Mustache files instead of ERB files.
 
-# TODO
+## TODO
 - [ ] Add more testing
 
-# Release flow
+## Release flow
 
 - Create new tag `git tag -a vx.y.z -m ""`
 - Push the tag `git push origin vx.y.z`
