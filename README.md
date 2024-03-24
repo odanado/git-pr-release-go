@@ -75,6 +75,8 @@ Customize your pull request description with Mustache templates, leveraging vari
 }
 ```
 
+For a practical example, refer to our [default template file](./git-pr-release.mustache).
+
 ## Compare with git-pr-release
 
 This tool is developed in Go, eliminating the need for Ruby, as it operates entirely through a binary file.
