@@ -87,8 +87,6 @@ func run(options Options) error {
 	date := currentTime.Format("2006-01-02")
 	data, err := RenderTemplate(options.template, RenderTemplateData{pullRequests, date})
 
-	logger.Println("Rendered template: ", data)
-
 	if err != nil {
 		return err
 	}
