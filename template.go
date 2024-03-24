@@ -13,7 +13,7 @@ import (
 var defaultTemplate string
 
 func readTemplate(filename *string) (string, error) {
-	if filename == nil {
+	if filename == nil || *filename == "" {
 		return defaultTemplate, nil
 	}
 
