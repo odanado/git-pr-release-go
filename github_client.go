@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/url"
 	"slices"
+	"strings"
 
 	"github.com/google/go-github/v60/github"
 )
@@ -25,6 +26,9 @@ type GithubClient struct {
 func NewClient(options GithubClientOptions) *GithubClient {
 	githubClient := github.NewClient(nil).WithAuthToken(options.githubToken)
 	if options.apiUrl != nil {
+		if !strings.HasSuffix(options.apiUrl.Path, "/") {
+			options.apiUrl.Path += "/"
+		}
 		githubClient.BaseURL = options.apiUrl
 	}
 

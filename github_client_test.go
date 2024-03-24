@@ -46,7 +46,7 @@ func TestFetchPullRequestNumbers(t *testing.T) {
 	ts := httptest.NewServer(mux)
 	defer ts.Close()
 
-	apiUrl, _ := url.Parse(ts.URL + "/")
+	apiUrl, _ := url.Parse(ts.URL)
 	client := NewClient(GithubClientOptions{owner: "owner", repo: "repo", githubToken: "githubToken", apiUrl: apiUrl})
 
 	prNumbers, err := client.FetchPullRequestNumbers(ctx, "from", "to")
@@ -82,7 +82,7 @@ func TestFetchPullRequests(t *testing.T) {
 	ts := httptest.NewServer(mux)
 	defer ts.Close()
 
-	apiUrl, _ := url.Parse(ts.URL + "/")
+	apiUrl, _ := url.Parse(ts.URL)
 	client := NewClient(GithubClientOptions{owner: "owner", repo: "repo", githubToken: "githubToken", apiUrl: apiUrl})
 
 	prNumbers := []int{1, 2}
@@ -124,7 +124,7 @@ func TestCreatePullRequest(t *testing.T) {
 	ts := httptest.NewServer(mux)
 	defer ts.Close()
 
-	apiUrl, _ := url.Parse(ts.URL + "/")
+	apiUrl, _ := url.Parse(ts.URL)
 	client := NewClient(GithubClientOptions{owner: "owner", repo: "repo", githubToken: "githubToken", apiUrl: apiUrl})
 
 	pr, created, err := client.CreatePullRequest(ctx, "title", "body", "from", "to")
@@ -160,7 +160,7 @@ func TestCreatePullRequest_alreadyExists(t *testing.T) {
 	ts := httptest.NewServer(mux)
 	defer ts.Close()
 
-	apiUrl, _ := url.Parse(ts.URL + "/")
+	apiUrl, _ := url.Parse(ts.URL)
 	client := NewClient(GithubClientOptions{owner: "owner", repo: "repo", githubToken: "githubToken", apiUrl: apiUrl})
 
 	pr, created, err := client.CreatePullRequest(ctx, "title", "body", "from", "to")
