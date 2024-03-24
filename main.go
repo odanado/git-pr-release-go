@@ -86,14 +86,16 @@ func run(options Options) error {
 	currentTime := time.Now()
 	date := currentTime.Format("2006-01-02")
 	data, err := RenderTemplate(options.template, RenderTemplateData{pullRequests, date})
-	parts := strings.SplitN(data, "\n", 2)
 
-	title := parts[0]
-	body := parts[1]
+	logger.Println("Rendered template: ", data)
 
 	if err != nil {
 		return err
 	}
+
+	parts := strings.SplitN(data, "\n", 2)
+	title := parts[0]
+	body := parts[1]
 
 	logger.Println("Title of pull request:  ", title)
 
