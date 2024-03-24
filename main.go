@@ -12,9 +12,10 @@ import (
 
 type Options struct {
 	// from flag
-	from   string
-	to     string
-	labels []string
+	from     string
+	to       string
+	labels   []string
+	template *string
 
 	// from env
 	owner       string
@@ -27,6 +28,7 @@ func getOptions() (Options, error) {
 	from := flag.String("from", "", "The base branch name.")
 	to := flag.String("to", "", "The target branch name.")
 	labelsFlag := flag.String("labels", "", "Specify the labels to add to the pull request as a comma-separated list of strings.")
+	template := flag.String("template", "", "The path to the template file.")
 	flag.Parse()
 
 	githubToken := os.Getenv("GITHUB_TOKEN")
@@ -46,6 +48,7 @@ func getOptions() (Options, error) {
 		from:        *from,
 		to:          *to,
 		labels:      labels,
+		template:    template,
 		owner:       owner,
 		repo:        repo,
 		gitHubToken: githubToken,
@@ -82,7 +85,7 @@ func run(options Options) error {
 
 	currentTime := time.Now()
 	date := currentTime.Format("2006-01-02")
-	data, err := RenderTemplate(nil, RenderTemplateData{pullRequests, date})
+	data, err := RenderTemplate(options.template, RenderTemplateData{pullRequests, date})
 	parts := strings.SplitN(data, "\n", 2)
 
 	title := parts[0]

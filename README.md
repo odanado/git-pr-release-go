@@ -51,6 +51,7 @@ jobs:
 - `--from`: The base branch name. Required.
 - `--to`: The target branch name. Required.
 - `--labels`: Specify the labels to add to the pull request as a comma-separated list of strings. Optional.
+- `--template`: Specify the Mustache template file. Optional.
 
 ## Environment Variables
 
@@ -72,7 +73,6 @@ While inspired by git-pr-release, this tool pays homage to its predecessor yet i
 - Templates use Mustache files instead of ERB files.
 
 # TODO
-- [ ] Support a custom template
 - [ ] Add more testing
 
 # Release flow
