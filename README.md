@@ -41,8 +41,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - run: ./git-pr-release-go --from main --to release/production
-        working-directory: git-pr-release-go
+      - run: git-pr-release-go --from main --to release/production
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 ```
