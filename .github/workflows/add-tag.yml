@@ -28,6 +28,11 @@ jobs:
           repository: babarot/git-bump
           arch: x86_64
 
+      - name: Set gitconfig
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
       - name: Bump version
         run: git-bump --${{ github.event.inputs.bump }}
         env:
