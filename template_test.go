@@ -9,6 +9,11 @@ import (
 )
 
 func TestRenderTemplate(t *testing.T) {
+	os.Setenv("GITHUB_SERVER_URL", "")
+	os.Setenv("GITHUB_REPOSITORY", "")
+	os.Setenv("GITHUB_RUN_ID", "")
+	os.Setenv("GITHUB_RUN_ATTEMPT", "")
+
 	data := RenderTemplateData{
 		PullRequests: []github.PullRequest{
 			{
