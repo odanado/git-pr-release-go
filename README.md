@@ -130,4 +130,4 @@ While inspired by git-pr-release, this tool pays homage to its predecessor yet i
 ## Release flow
 
 - Create new tag `git tag -a vx.y.z -m ""`
-- Push the tag `git push origin vx.y.z`
+- Push the tag `git push --follow-tags`

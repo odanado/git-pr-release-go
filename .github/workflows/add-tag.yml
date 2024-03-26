@@ -12,7 +12,8 @@ on:
           - minor
           - patch
 
-
+# This workflow is useful.
+# But, the event triggered by GITHUB_TOKEN will not fire other workflows, so GitHub Apps must push the tag. 
 jobs:
   add-tag:
     runs-on: ubuntu-latest
