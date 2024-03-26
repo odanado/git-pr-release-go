@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"net/url"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/google/go-github/v60/github"
 )
 
 type Options struct {
@@ -16,6 +19,7 @@ type Options struct {
 	to       string
 	labels   []string
 	template *string
+	json     bool
 
 	// from env
 	owner       string
@@ -29,6 +33,7 @@ func getOptions() (Options, error) {
 	to := flag.String("to", "", "The target branch name.")
 	labelsFlag := flag.String("labels", "", "Specify the labels to add to the pull request as a comma-separated list of strings.")
 	template := flag.String("template", "", "The path to the template file.")
+	json := flag.Bool("json", false, "Output the result as JSON.")
 	flag.Parse()
 
 	githubToken := os.Getenv("GITHUB_TOKEN")
@@ -49,11 +54,25 @@ func getOptions() (Options, error) {
 		to:          *to,
 		labels:      labels,
 		template:    template,
+		json:        *json,
 		owner:       owner,
 		repo:        repo,
 		gitHubToken: githubToken,
 		apiUrl:      apiUrl,
 	}, nil
+}
+
+type Result struct {
+	IsCreated          bool                `json:"is_created,omitempty"`
+	ReleasePullRequest *github.PullRequest `json:"release_pull_request,omitempty"`
+}
+
+func getResultJson(result Result) (string, error) {
+	resultJson, err := json.Marshal(result)
+	if err != nil {
+		return "", err
+	}
+	return string(resultJson), nil
 }
 
 func run(options Options) error {
@@ -118,6 +137,16 @@ func run(options Options) error {
 			return err
 		}
 		logger.Println("Added labels to the pull request.", pr.GetNumber())
+	}
+
+	if options.json {
+		result := Result{IsCreated: created, ReleasePullRequest: pr}
+		resultJson, err := getResultJson(result)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(resultJson)
 	}
 
 	return nil

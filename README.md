@@ -87,6 +87,7 @@ jobs:
 - `--to`: The target branch name. Required.
 - `--labels`: Specify the labels to add to the pull request as a comma-separated list of strings. Optional.
 - `--template`: Specify the Mustache template file. Optional.
+- `--json`: Output the release pull request data in JSON format. Optional. Default is false.
 
 ### Environment Variables
 
