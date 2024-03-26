@@ -1,0 +1,30 @@
+name: add tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        type: choice
+        description: 'Bump the version'
+        required: true
+        options:
+          - major
+          - minor
+          - patch
+
+
+jobs:
+  add-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup git-bump
+        uses: KeisukeYamashita/setup-release@v1.0.2
+        with:
+          repository: babarot/git-bump
+          arch: x86_64
+      
+      - name: Bump version
+        run: git-bump ${{ github.event.inputs.bump }}
