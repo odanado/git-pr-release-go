@@ -27,11 +27,8 @@ jobs:
         with:
           repository: babarot/git-bump
           arch: x86_64
-      
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
 
       - name: Bump version
-        run: git-bump ${{ github.event.inputs.bump }}
+        run: git-bump --${{ github.event.inputs.bump }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
