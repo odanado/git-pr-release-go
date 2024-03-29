@@ -1,12 +1,28 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"strings"
 	"testing"
 
 	"github.com/google/go-github/v60/github"
 )
+
+func makeDummyTemplate(template string) string {
+	tmpFile, err := os.CreateTemp("", "custom.mustache")
+	if err != nil {
+		panic(err)
+	}
+
+	filename := tmpFile.Name()
+	_, err = tmpFile.Write([]byte(template))
+	if err != nil {
+		panic(err)
+	}
+
+	return filename
+}
 
 func TestRenderTemplate(t *testing.T) {
 	os.Setenv("GITHUB_SERVER_URL", "")
@@ -77,6 +93,52 @@ func TestRenderTemplate(t *testing.T) {
 			t.Errorf("RenderTemplate returned %v, want %v", template, want)
 		}
 	})
+
+	t.Run("About customParameters", func(t *testing.T) {
+		t.Run("customParameters is empty", func(t *testing.T) {
+			var customParameters any
+			err := json.Unmarshal([]byte("{}"), &customParameters)
+			if err != nil {
+				panic(err)
+			}
+			data := RenderTemplateData{
+				CustomParameters: customParameters,
+			}
+			filename := makeDummyTemplate("custom_parameters: '{{custom_parameters}}'")
+			defer os.Remove(filename)
+			template, err := RenderTemplate(&filename, data, false)
+
+			if err != nil {
+				t.Errorf("RenderTemplate returned error: %v", err)
+			}
+			want := "custom_parameters: 'map[]'"
+			if !strings.Contains(template, want) {
+				t.Errorf("RenderTemplate returned %v, want %v", template, want)
+			}
+		})
+
+		t.Run("customParameters is not empty", func(t *testing.T) {
+			var customParameters any
+			err := json.Unmarshal([]byte(`{"foo": "bar"}`), &customParameters)
+			if err != nil {
+				panic(err)
+			}
+			data := RenderTemplateData{
+				CustomParameters: customParameters,
+			}
+			filename := makeDummyTemplate("custom_parameters: '{{custom_parameters.foo}}'")
+			defer os.Remove(filename)
+			template, err := RenderTemplate(&filename, data, false)
+
+			if err != nil {
+				t.Errorf("RenderTemplate returned error: %v", err)
+			}
+			want := "custom_parameters: 'bar'"
+			if !strings.Contains(template, want) {
+				t.Errorf("RenderTemplate returned %v, want %v", template, want)
+			}
+		})
+	})
 }
 
 func TestRenderTemplateWithFilename(t *testing.T) {
@@ -92,18 +154,8 @@ func TestRenderTemplateWithFilename(t *testing.T) {
 		Date: "2021-01-01",
 	}
 
-	tmpFile, err := os.CreateTemp("", "custom.mustache")
-	if err != nil {
-		panic(err)
-	}
-	defer os.Remove(tmpFile.Name())
-
-	filename := tmpFile.Name()
-	_, err = tmpFile.Write([]byte("This is custom template"))
-	if err != nil {
-		panic(err)
-	}
-
+	filename := makeDummyTemplate("This is custom template")
+	defer os.Remove(filename)
 	template, err := RenderTemplate(&filename, data, false)
 
 	if err != nil {
