@@ -96,7 +96,7 @@ func getResultJson(result Result) (string, error) {
 
 func run(options Options) error {
 	logger = GetLogger()
-	logger.Printf("git-pr-release-go version: %s, commit: %s, date: %s\n", version, commit, date)
+	logger.Printf("version: %s, commit: %s, date: %s\n", version, commit, date)
 
 	ctx := context.Background()
 
