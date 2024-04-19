@@ -13,6 +13,13 @@ import (
 	"github.com/google/go-github/v60/github"
 )
 
+// https://goreleaser.com/cookbooks/using-main.version/
+var (
+	version = "unset"
+	commit  = "none"
+	date    = "unknown"
+)
+
 type Options struct {
 	// from flag
 	from                      string
@@ -89,6 +96,8 @@ func getResultJson(result Result) (string, error) {
 
 func run(options Options) error {
 	logger = GetLogger()
+	logger.Printf("git-pr-release-go version: %s, commit: %s, date: %s\n", version, commit, date)
+
 	ctx := context.Background()
 
 	from := options.from
