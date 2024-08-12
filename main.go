@@ -184,14 +184,14 @@ func main() {
 	options, err := getOptions()
 
 	if err != nil {
-		fmt.Println("Error: ", err)
+		fmt.Fprintln(os.Stderr, "Error: ", err)
 		os.Exit(1)
 	}
 
 	err = run(options)
 
 	if err != nil {
-		fmt.Println("Error: ", err)
+		fmt.Fprintln(os.Stderr, "Error: ", err)
 		os.Exit(1)
 	}
 }
