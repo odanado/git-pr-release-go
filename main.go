@@ -191,6 +191,11 @@ func main() {
 	}
 
 	if options.json {
+
+		if result == nil {
+			result = &Result{}
+		}
+
 		resultJson, err := getResultJson(*result)
 
 		if err != nil {
