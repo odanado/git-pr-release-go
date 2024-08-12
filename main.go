@@ -94,7 +94,12 @@ func getResultJson(result Result) (string, error) {
 	return string(resultJson), nil
 }
 
-func run(options Options) error {
+func exitWithError(err error) {
+	fmt.Fprintln(os.Stderr, "Error: ", err)
+	os.Exit(1)
+}
+
+func run(options Options) (*Result, error) {
 	logger = GetLogger()
 	logger.Printf("version: %s, commit: %s, date: %s\n", version, commit, date)
 
@@ -107,12 +112,12 @@ func run(options Options) error {
 
 	prNumbers, err := client.FetchPullRequestNumbers(ctx, from, to)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if len(prNumbers) == 0 {
 		logger.Println("No pull requests were found for the release. Nothing to do.")
-		return nil
+		return nil, nil
 	}
 
 	logger.Println("Found pull requests: ", prNumbers)
@@ -120,7 +125,7 @@ func run(options Options) error {
 	pullRequests, err := client.FetchPullRequests(ctx, prNumbers)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	currentTime := time.Now()
@@ -135,7 +140,7 @@ func run(options Options) error {
 	data, err := RenderTemplate(options.template, renderTemplateData, options.disableGeneratedByMessage)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	parts := strings.SplitN(data, "\n", 2)
@@ -146,7 +151,7 @@ func run(options Options) error {
 
 	pr, created, err := client.CreatePullRequest(ctx, title, body, from, to)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if created {
@@ -154,7 +159,7 @@ func run(options Options) error {
 	} else {
 		_, err := client.UpdatePullRequest(ctx, pr.GetNumber(), title, body)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		logger.Println("The pull request already exists. The body was updated.", pr.GetNumber())
 	}
@@ -162,36 +167,36 @@ func run(options Options) error {
 	if len(options.labels) > 0 {
 		err := client.AddLabelsToPullRequest(ctx, pr.GetNumber(), options.labels)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		logger.Println("Added labels to the pull request.", pr.GetNumber())
 	}
 
-	if options.json {
-		result := Result{IsCreated: created, ReleasePullRequest: pr}
-		resultJson, err := getResultJson(result)
-		if err != nil {
-			return err
-		}
+	result := Result{IsCreated: created, ReleasePullRequest: pr}
 
-		fmt.Println(resultJson)
-	}
-
-	return nil
+	return &result, nil
 }
 
 func main() {
 	options, err := getOptions()
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error: ", err)
-		os.Exit(1)
+		exitWithError(err)
 	}
 
-	err = run(options)
+	result, err := run(options)
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error: ", err)
-		os.Exit(1)
+		exitWithError(err)
+	}
+
+	if options.json {
+		resultJson, err := getResultJson(*result)
+
+		if err != nil {
+			exitWithError(err)
+		}
+
+		fmt.Println(resultJson)
 	}
 }
