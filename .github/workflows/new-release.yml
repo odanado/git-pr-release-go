@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - release/cli
+
+jobs:
+  get-release-level:
+    runs-on: ubuntu-latest
+    outputs:
+      value: ${{ steps.release-label.outputs.level }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions-ecosystem/action-get-merged-pull-request@v1
+        id: get-merged-pull-request
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions-ecosystem/action-release-label@v1
+        id: release-label
+        with:
+          labels: ${{ steps.get-merged-pull-request.outputs.labels }}
+          label_prefix: "bump:"
+
+  goreleaser:
+    runs-on: ubuntu-latest
+    needs: [get-release-level]
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: ${{ needs.get-release-level.outputs.value }}
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
