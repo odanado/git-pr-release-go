@@ -27,11 +27,12 @@ func readTemplate(filename *string) (string, error) {
 }
 
 type RenderTemplateData struct {
-	PullRequests     []github.PullRequest `json:"pull_requests"`
-	Date             string               `json:"date"`
-	From             string               `json:"from"`
-	To               string               `json:"to"`
-	CustomParameters any                  `json:"custom_parameters"`
+	PullRequests     []github.PullRequest      `json:"pull_requests"`
+	Commits          []github.RepositoryCommit `json:"commits"`
+	Date             string                    `json:"date"`
+	From             string                    `json:"from"`
+	To               string                    `json:"to"`
+	CustomParameters any                       `json:"custom_parameters"`
 }
 
 func convertJson(data RenderTemplateData) (any, error) {

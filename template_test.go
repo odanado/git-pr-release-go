@@ -151,6 +151,11 @@ func TestRenderTemplateWithFilename(t *testing.T) {
 				Number: github.Int(2),
 			},
 		},
+		Commits: []github.RepositoryCommit{
+			{
+				SHA: github.String("1234567890"),
+			},
+		},
 		Date: "2021-01-01",
 	}
 
