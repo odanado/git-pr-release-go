@@ -1,0 +1,88 @@
+name: Check Release
+on:
+  pull_request:
+    branches:
+      - release/cli
+    types:
+      - labeled
+      - unlabeled
+      - synchronize
+      - opened
+
+jobs:
+  check-label:
+    runs-on: ubuntu-latest
+    outputs:
+      level: ${{ steps.release-label.outputs.level }}
+    steps:
+      - uses: actions-ecosystem/action-release-label@v1
+        id: release-label
+        with:
+          label_prefix: "bump:"
+
+  find-comment:
+    runs-on: ubuntu-latest
+    outputs:
+      comment-id: ${{ steps.fc.outputs.comment-id }}
+    steps:
+      - name: Find Comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "🤖 **Check Release**"
+
+  notify-new-version:
+    runs-on: ubuntu-latest
+    needs: [check-label, find-comment]
+    if: ${{ needs.check-label.outputs.level != null }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
+      - uses: actions-ecosystem/action-bump-semver@v1
+        id: bump-semver
+        with:
+          current_version: ${{ steps.get-latest-tag.outputs.tag }}
+          level: ${{needs.check-label.outputs.level }}
+
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ needs.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            🤖 **Check Release**
+            If you merge this pull request, the version of the CLI tool will be released.
+            - Current Version: ${{ steps.get-latest-tag.outputs.tag }}
+            - New Version: ${{ steps.bump-semver.outputs.new_version }}
+          edit-mode: replace
+
+      - name: Update title of pull request
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --title "Release new version: ${{ steps.bump-semver.outputs.new_version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify-please-add-label:
+    runs-on: ubuntu-latest
+    needs: [check-label, find-comment]
+    if: ${{ needs.check-label.outputs.level == null }}
+    steps:
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ needs.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            🤖 **Check Release**
+            You forgot to add a label to bump the version.
+            Please add a label `bump:patch`, `bump:minor`, or `bump:major` to this pull request.
+          edit-mode: replace
+
+      - name: Update title of pull request
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --title "Release new version"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
