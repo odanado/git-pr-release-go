@@ -110,24 +110,28 @@ func run(options Options) (*Result, error) {
 
 	client := NewClient(GithubClientOptions{owner: options.owner, repo: options.repo, githubToken: options.gitHubToken, apiUrl: options.apiUrl})
 
-	totalCommits, pullRequests, commits, err := client.FetchChanges(ctx, from, to)
+	prNumbers, err := client.FetchPullRequestNumbers(ctx, from, to)
 	if err != nil {
 		return nil, err
 	}
 
-	if totalCommits == 0 {
-		logger.Println("No pull requests or commits were found for the release. Nothing to do.")
+	if len(prNumbers) == 0 {
+		logger.Println("No pull requests were found for the release. Nothing to do.")
 		return nil, nil
 	}
 
-	logger.Println("Found pull requests: ", len(pullRequests))
-	logger.Println("Found commits: ", len(commits))
+	logger.Println("Found pull requests: ", prNumbers)
+
+	pullRequests, err := client.FetchPullRequests(ctx, prNumbers)
+
+	if err != nil {
+		return nil, err
+	}
 
 	currentTime := time.Now()
 	date := currentTime.Format("2006-01-02")
 	renderTemplateData := RenderTemplateData{
 		PullRequests:     pullRequests,
-		Commits:          commits,
 		Date:             date,
 		From:             from,
 		To:               to,

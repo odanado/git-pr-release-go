@@ -85,51 +85,6 @@ func (c *GithubClient) FetchPullRequests(ctx context.Context, prNumbers []int) (
 	return pullRequests, nil
 }
 
-func (c *GithubClient) FetchChanges(ctx context.Context, from string, to string) (int, []github.PullRequest, []github.RepositoryCommit, error) {
-	commitsComparison, _, err := c.client.Repositories.CompareCommits(ctx, c.owner, c.repo, to, from, nil)
-
-	if err != nil {
-		return 0, nil, nil, err
-	}
-
-	if *commitsComparison.TotalCommits == 0 {
-		return 0, nil, nil, nil
-	}
-
-	pullRequests := []github.PullRequest{}
-	commits := []github.RepositoryCommit{}
-
-	for i := 0; i < len(commitsComparison.Commits); i++ {
-		commit := commitsComparison.Commits[i]
-
-		_pullRequests, _, err := c.client.PullRequests.ListPullRequestsWithCommit(ctx, c.owner, c.repo, commit.GetSHA(), nil)
-		if err != nil {
-			return 0, nil, nil, err
-		}
-
-		if len(_pullRequests) > 0 {
-			for j := 0; j < len(_pullRequests); j++ {
-				pullRequests = append(pullRequests, *_pullRequests[j])
-			}
-		} else {
-			commits = append(commits, *commit)
-		}
-	}
-
-	slices.SortFunc(pullRequests, func(a, b github.PullRequest) int {
-		return a.MergedAt.Compare(b.MergedAt.Time)
-	})
-	uniquePullRequests := slices.CompactFunc(pullRequests, func(a, b github.PullRequest) bool {
-		return a.MergedAt.Equal(*b.MergedAt)
-	})
-
-	slices.SortFunc(commits, func(a, b github.RepositoryCommit) int {
-		return a.Commit.Author.Date.Compare(b.Commit.Author.Date.Time)
-	})
-
-	return *commitsComparison.TotalCommits, uniquePullRequests, commits, nil
-}
-
 func (c *GithubClient) CreatePullRequest(ctx context.Context, title, body, from, to string) (*github.PullRequest, bool, error) {
 	prs, _, err := c.client.PullRequests.List(ctx, c.owner, c.repo, &github.PullRequestListOptions{
 		Base:  to,
