@@ -75,7 +75,9 @@ func (c *GithubClient) FetchPullRequests(ctx context.Context, prNumbers []int) (
 			return nil, err
 		}
 
-		pullRequests = append(pullRequests, *pr)
+		if pr.MergedAt != nil {
+			pullRequests = append(pullRequests, *pr)
+		}
 	}
 
 	slices.SortFunc(pullRequests, func(a, b github.PullRequest) int {
